@@ -1,8 +1,8 @@
 import argparse
-from traceback import print_tb
 import requests
 import json
 import sys
+import urllib3
 
 def parser_args():
     """
@@ -22,24 +22,46 @@ def parser_args():
 
 class Artifactory:
     def __init__(self):
-        self.username, self.password, self.artifactory_url, self.headers = self.user_authentication()
+        self.username, self.password, self.artifactory_url, self.token = self.user_authentication()
         self.args = parser_args()
         
     def user_authentication(self):
         """
         Get username and password from the user.
         """
-        username = "alexscherba" #input("Input username: ")  
-        password = "Alex0246802" #input("Input password: ")
-        artifactory_url = f"https://{username}.jfrog.io/artifactory/"
-        token_url = "api/security/token"
+        user_dict = {}
+        user_dict["username"] = "alexscherba" #input("Input username: ")
+        user_dict["password"] = "Alex0246802" #input("Input password: ")
+        user_dict["scope"] = "member-of-groups:*"
 
-        r = requests.get(artifactory_url + token_url, auth = (username, password))
-        if r.status_code == 200: # if the response is 200, then the token is valid
-            headers = {'X-JFrog-Api': r.headers.get('X-JFrog-Api'), 'Content-Type': 'application/json'}
-            return username, password, artifactory_url, headers
+        headers_dict = {"Content-Type": "application/x-www-form-urlencoded"}
+
+        artifactory_url = f"https://{user_dict['username']}.jfrog.io/artifactory/"
+        token_api = f"api/security/token"
+        r = requests.post(artifactory_url + token_api, data=user_dict, headers=headers_dict, auth = (user_dict['username'], user_dict['password']))
+        if r.status_code == 200:
+            print("Authentication successful")
+            return user_dict["username"], user_dict["password"], artifactory_url, r.json()["access_token"]
         else:
-            sys.exit("Cant get token information\n" % r.content.decode('utf-8'))
+            print("Authentication failed"+ r.content.decode('utf-8'))
+            sys.exit()
+
+        # username = "alexscherba" #input("Input username: ")  
+        # password = "Alex0246802" #input("Input password: ")
+        # artifactory_url = f"https://{username}.jfrog.io/artifactory/"
+        # token_api = "api/security/token"
+        # headers = urllib3.make_headers(basic_auth=f"{username}:{password}")
+        # r = requests.post(artifactory_url + token_api, headers=headers)
+        # if r.status_code == 200:
+            
+
+
+        # r = requests.get(artifactory_url + token_url, auth = (username, password))
+        # if r.status_code == 200: # if the response is 200, then the token is valid
+        #     headers = {'Content-Type': 'application/json'}
+        #     return username, password, artifactory_url, headers
+        # else:
+        #     sys.exit("Cant get token information\n" % r.content.decode('utf-8'))
 
     def pass_args(self):
         """
@@ -59,8 +81,6 @@ class Artifactory:
             self.delete_user()
         elif self.args.create_repository:
             self.create_repository()
-        elif self.args.delete_repository:
-            self.delete_repository()
         elif self.args.update_repository:
             self.update_repository()
         else:
@@ -68,9 +88,9 @@ class Artifactory:
 
     def system_ping(self):
         """
-        Ping the server
+        Ping the server.
         """
-        r = requests.get(self.artifactory_url + "api/system/ping", auth = (self.username, self.password))
+        r = requests.get(self.artifactory_url + "api/system/ping", auth = (self.username, self.token))
         if r.status_code == 200:
             print("Ping status: " + r.content.decode('utf-8'))
         else:
@@ -78,9 +98,9 @@ class Artifactory:
     
     def system_version(self):
         """
-        Get the version of the server
+        Get the version of the server.
         """
-        r = requests.get(self.artifactory_url + "api/system/version", auth = (self.username, self.password))
+        r = requests.get(self.artifactory_url + "api/system/version", auth = (self.username, self.token))
         if r.status_code == 200:
             print("Version: " + r.content.decode('utf-8'))
         else:
@@ -88,9 +108,9 @@ class Artifactory:
     
     def storage_info(self):
         """
-        Get the storage info
+        Get the storage info.
         """
-        r = requests.get(self.artifactory_url + "api/storageinfo", auth = (self.username, self.password))
+        r = requests.get(self.artifactory_url + "api/storageinfo", auth = (self.username, self.token))
         if r.status_code == 200:
             print(json.dumps(r.json(), indent = 4))
         else:
@@ -98,9 +118,9 @@ class Artifactory:
     
     def list_repositories(self):
         """
-        List all repositories
+        List all repositories.
         """
-        r = requests.get(self.artifactory_url + "api/repositories", auth = (self.username, self.password))
+        r = requests.get(self.artifactory_url + "api/repositories", auth = (self.username, self.token))
         if r.status_code == 200:
             print(json.dumps(r.json(), indent = 4))
         else:
@@ -108,14 +128,15 @@ class Artifactory:
 
     def create_user(self):
         """
-        Create a user in Artifactory
+        Create a user in Artifactory.
         """
         create_user_dict = {}
         create_user_dict["username"] = input("Input username: ")
         create_user_dict["password"] = input("Input password: ")
         create_user_dict["admin"] = False
         create_user_dict["email"] = input("Input email: ")
-        r = requests.put(self.artifactory_url + "api/security/users/" + create_user_dict["username"], headers=self.headers, data=json.dumps(create_user_dict).encode('utf-8'), auth = (self.username, self.password))
+        headers = {'Content-Type': 'application/json'}
+        r = requests.put(self.artifactory_url + "api/security/users/" + create_user_dict["username"], headers=headers, data=json.dumps(create_user_dict).encode('utf-8'), auth = (self.username, self.token))
         if r.status_code == 201:
             print("User created")
         else:
@@ -123,10 +144,10 @@ class Artifactory:
 
     def delete_user(self):
         """
-        Delete a user in Artifactory
+        Delete a user in Artifactory.
         """
         user_name = input("Input user name: ")
-        r = requests.delete(self.artifactory_url + "api/security/users/" + user_name, auth = (self.username, self.password))
+        r = requests.delete(self.artifactory_url + "api/security/users/" + user_name, auth = (self.username, self.token))
         if r.status_code == 200:
             print("User deleted successfully")
         else:
@@ -134,26 +155,29 @@ class Artifactory:
     
     def create_repository(self):
         """
-        Create a repository in Artifactory
+        Create a repository in Artifactory.
         """
-        create_user_dict = {}
-        create_user_dict["key"] = input("Input repository name: ")
-        create_user_dict["rclass"] = "local"
-        create_user_dict["packageType"] = input("Package type: ")# "maven"
-        create_user_dict["description"] = input("Input repository description: ")
-        r = requests.put(self.artifactory_url + "api/repositories/" + create_user_dict["key"], headers=self.headers, data=json.dumps(create_user_dict).encode('utf-8'), auth = (self.username, self.password))
+        create_reprepository_dict = {}
+        create_reprepository_dict["key"] = input("Input repository name: ")
+        create_reprepository_dict["rclass"] = "local"
+        create_reprepository_dict["packageType"] = input("Package type: ")# "maven"
+        create_reprepository_dict["description"] = input("Input repository description: ")
+        headers = {'Content-Type': 'application/json'}
+        r = requests.put(self.artifactory_url + "api/repositories/" + create_reprepository_dict["key"], headers=headers, data=json.dumps(create_reprepository_dict).encode('utf-8'), auth = (self.username, self.token))
         if r.status_code == 200:
             print("Repository created successfully")
         else:
-            print("Repository creation failed \n" + str(r.status_code) + " " + str(r.content.decode('utf-8')))
+            print("Repository creation failed \n" + str(r.status_code) + "\n" + str(r.content.decode('utf-8')))
     
     def update_repository(self):
         """
-        Update a repository in Artifactory
+        Update the description of the repository.
         """
         update_repository_dict = {}
+        update_repository_dict["key"] = input("Input repository name: ")
         update_repository_dict["description"] = input("Input repository description: ")
-        r = requests.post(self.artifactory_url + "api/repositories/" + update_repository_dict["key"], headers=self.headers, data=json.dumps(update_repository_dict).encode('utf-8'), auth = (self.username, self.password))
+        headers = {'Content-Type': 'application/json'}
+        r = requests.post(self.artifactory_url + "api/repositories/" + update_repository_dict["key"], headers=headers, data=json.dumps(update_repository_dict).encode('utf-8'), auth = (self.username, self.token))
         if r.status_code == 200:
             print("Repository updated successfully")
         else:
