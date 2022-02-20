@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: alexscherba
-Version: 1.0
+Version: 1.1
 Summary: Alex home assignment
 Home-page: https://alexscherba.jfrog.io/artifactory/api/pypi/alex_assignment_local
 Author: Alex Schebrakov
@@ -19,8 +19,8 @@ Description: # Jfrog Alex Home Assignment
         
         optional arguments: 
         
-        flag | long               | description
-        ---- |--------------------|--------------------------------
+        flag | long                | description
+        ---- |---------------------|--------------------------------
         -h   | --help              | show this help message and exit
         -p   | --system_ping       | Return ping from the system
         -v   | --system_version    | Return system version
@@ -32,13 +32,18 @@ Description: # Jfrog Alex Home Assignment
         -cu  | --create_user       | Create user
         -du  | --delete_user       | Delete user
         
-        ## Resources
-        https://academy.jfrog.com/jfrog-artifactory-overview-2020/443201
-        https://github.com/jfrog/artifactory-scripts/tree/master/
-        https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+API
-        https://www.jfrog.com/confluence/display/RTF
-        https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+APIREST-API-Examples
-        https://docs.python.org/3/library/argparse.html
+        ## Resources & decisions 
+        
+        At the beginning I study the artifactory environment.
+        
+        * https://academy.jfrog.com/jfrog-artifactory-overview-2020/443201
+        * https://www.jfrog.com/confluence/display/RTF
+        
+        After this I build CLI python script that manage an Artifactory SaaS instance with all the required features.
+        
+        * https://docs.python.org/3/library/argparse.html
+        * https://github.com/jfrog/artifactory-scripts/tree/master/REST-API-Examples
+        * https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+API
         
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
