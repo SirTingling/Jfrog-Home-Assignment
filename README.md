@@ -11,8 +11,8 @@ python3 alex_artifactory.py [-h] [-p] [-v] [-gsi] [-lr] [-cr] [-dr] [-ur] [-cu] 
 
 optional arguments: 
 
-flag | long               | description
----- |--------------------|--------------------------------
+flag | long                | description
+---- |---------------------|--------------------------------
 -h   | --help              | show this help message and exit
 -p   | --system_ping       | Return ping from the system
 -v   | --system_version    | Return system version
@@ -24,10 +24,15 @@ flag | long               | description
 -cu  | --create_user       | Create user
 -du  | --delete_user       | Delete user
 
-## Resources
-https://academy.jfrog.com/jfrog-artifactory-overview-2020/443201
-https://github.com/jfrog/artifactory-scripts/tree/master/
-https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+API
-https://www.jfrog.com/confluence/display/RTF
-https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+APIREST-API-Examples
-https://docs.python.org/3/library/argparse.html
+## Resources & decisions 
+
+At the beginning I study the artifactory environment.
+
+* https://academy.jfrog.com/jfrog-artifactory-overview-2020/443201
+* https://www.jfrog.com/confluence/display/RTF
+
+After this I build CLI python script that manage an Artifactory SaaS instance with all the required features.
+
+* https://docs.python.org/3/library/argparse.html
+* https://github.com/jfrog/artifactory-scripts/tree/master/REST-API-Examples
+* https://www.jfrog.com/confluence/display/JFROG/Artifactory+REST+API
