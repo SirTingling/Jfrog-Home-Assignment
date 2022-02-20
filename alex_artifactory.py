@@ -2,7 +2,6 @@ import argparse
 import requests
 import json
 import sys
-import urllib3
 
 def parser_args():
     """
@@ -22,7 +21,7 @@ def parser_args():
 
 class Artifactory:
     def __init__(self):
-        self.username, self.password, self.artifactory_url, self.token = self.user_authentication()
+        self.username, self.artifactory_url, self.token = self.user_authentication()
         self.args = parser_args()
         
     def user_authentication(self):
@@ -30,8 +29,9 @@ class Artifactory:
         Get username and password from the user.
         """
         user_dict = {}
-        user_dict["username"] = "alexscherba" #input("Input username: ")
-        user_dict["password"] = "Alex0246802" #input("Input password: ")
+        print("Welcome to jfrog Artifactory")
+        user_dict["username"] = input("Please input your username: ") #"alexscherba" 
+        user_dict["password"] = input("please Input your password: ") #"Alex0246802" 
         user_dict["scope"] = "member-of-groups:*"
 
         headers_dict = {"Content-Type": "application/x-www-form-urlencoded"}
@@ -41,27 +41,10 @@ class Artifactory:
         r = requests.post(artifactory_url + token_api, data=user_dict, headers=headers_dict, auth = (user_dict['username'], user_dict['password']))
         if r.status_code == 200:
             print("Authentication successful")
-            return user_dict["username"], user_dict["password"], artifactory_url, r.json()["access_token"]
+            return user_dict["username"], artifactory_url, r.json()["access_token"]
         else:
             print("Authentication failed"+ r.content.decode('utf-8'))
             sys.exit()
-
-        # username = "alexscherba" #input("Input username: ")  
-        # password = "Alex0246802" #input("Input password: ")
-        # artifactory_url = f"https://{username}.jfrog.io/artifactory/"
-        # token_api = "api/security/token"
-        # headers = urllib3.make_headers(basic_auth=f"{username}:{password}")
-        # r = requests.post(artifactory_url + token_api, headers=headers)
-        # if r.status_code == 200:
-            
-
-
-        # r = requests.get(artifactory_url + token_url, auth = (username, password))
-        # if r.status_code == 200: # if the response is 200, then the token is valid
-        #     headers = {'Content-Type': 'application/json'}
-        #     return username, password, artifactory_url, headers
-        # else:
-        #     sys.exit("Cant get token information\n" % r.content.decode('utf-8'))
 
     def pass_args(self):
         """
