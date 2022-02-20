@@ -1,0 +1,9 @@
+README.md
+setup.py
+alexscherba.egg-info/PKG-INFO
+alexscherba.egg-info/SOURCES.txt
+alexscherba.egg-info/dependency_links.txt
+alexscherba.egg-info/requires.txt
+alexscherba.egg-info/top_level.txt
+project/__init__.py
+project/alex_artifactory.py
