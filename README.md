@@ -9,7 +9,7 @@ The first one:
 ```cmd
 pip3 install alexscherba -i  https://alexscherba.jfrog.io/artifactory/alex_assignment_local/alexscherba
 ```
-username: alexscherba
+username: alexscherba \
 password: Alex0246802
 
 The second:
